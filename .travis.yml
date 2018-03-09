@@ -1,0 +1,12 @@
+addons:
+  apt:
+    packages:
+      - reprepro
+      - createrepo
+      - curl
+      - dpkg-dev
+      - openssl
+
+script:
+  - "./updaterepos.sh"
+  - "ls pkgs"
