@@ -6,6 +6,8 @@ addons:
       - curl
       - dpkg-dev
       - openssl
+      - expect
+      - debsigs
 
 script:
   - "./updaterepos.sh"
