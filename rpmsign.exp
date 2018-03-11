@@ -1,0 +1,7 @@
+#!/usr/bin/expect -f
+set rpmfile [lindex $argv 0]
+set key [lindex $argv 1]
+spawn rpm --addsign $rpmfile
+expect -exact "Enter pass phrase: "
+send -- "$key\r"
+expect eof
