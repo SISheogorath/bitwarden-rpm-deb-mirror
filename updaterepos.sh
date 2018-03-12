@@ -12,8 +12,6 @@ echo -e "Download new RPM packages"
 mkdir -p pkgs/rpms
 curl -L 'https://github.com/bitwarden/desktop/releases/download/v1.0.5/Bitwarden-1.0.5-x86_64.rpm' -o pkgs/rpms/bitwarden.rpm
 
-# generation of new RPM repository from downloaded packages
-createrepo pkgs/rpms/
 
 echo -e "Download new DEB packages"
 mkdir pkgs/debs/
@@ -34,6 +32,9 @@ echo "%_gpg_name $KEYID" > ~/.rpmmacros
 # Sign deb package
  debsigs --sign=origin -k $KEYID /tmp/bitwarden.deb
 
+ # generation of new RPM repository from downloaded packages
+ createrepo pkgs/rpms/
+
 # generation of new Deb repository from downloaded packages
 mkdir pkgs/debs/conf
 touch pkgs/debs/conf/{option,distributions}
@@ -47,6 +48,12 @@ echo "Sign the repositories"
 gpg --detach-sign --armor pkgs/rpms/repodata/repomd.xml
 gpg --detach-sign --armor pkgs/debs/dists/bitwarden/main/binary-amd64/Release
 
+echo "Cleanup key"
+rm signing.key
+
+echo "Beautify repository"
+cp pub.gpg pkgs/
+cp resources/index.html pkgs/
 
 
 # DOCS
