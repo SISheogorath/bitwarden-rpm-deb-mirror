@@ -47,6 +47,12 @@ echo "Sign the repositories"
 gpg --detach-sign --armor pkgs/rpms/repodata/repomd.xml
 gpg --detach-sign --armor pkgs/debs/dists/bitwarden/main/binary-amd64/Release
 
+echo "Cleanup key"
+rm signing.key
+
+echo "Beautify repository"
+cp pub.gpg pkgs/
+cp resources/index.html pkgs/
 
 
 # DOCS

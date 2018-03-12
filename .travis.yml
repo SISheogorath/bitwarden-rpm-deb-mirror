@@ -1,3 +1,8 @@
+sudo: required
+language: bash
+services:
+  - docker
+
 addons:
   apt:
     packages:
@@ -11,4 +16,18 @@ addons:
 
 script:
   - "./updaterepos.sh"
-  - "ls pkgs"
+  - "docker build -t ${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}:latest ."
+
+after_success:
+  # Push successful builds of the master branch to Docker Hub
+  # You need to define $DOCKER_REPO_PREFIX, $DOCKER_REPO_NAME, $DOCKER_USERNAME and $DOCKER_PASSWORD in your Travis settings.
+  # $DOCKER_REPO_PREFIX - Organisation of username who owns the repo on Docker Hub
+  # $DOCKER_REPO_NAME   - Repository name on Docker Hub
+  # $DOCKER_USERNAME    - Docker Hub username used to push the image
+  # $DOCKER_PASSWORD    - Password of the Docker Hub user used to push the image
+  # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "feature/serviceRepo" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
+    docker images "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}";
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker images --format "{{.Repository}}:{{.Tag}}" "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}" | xargs -L 1 docker push ;
+    fi
